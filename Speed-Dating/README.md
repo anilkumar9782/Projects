@@ -4,5 +4,5 @@ Following a speed dating event, the events team received complaints from custome
 
 I completed this project for my DataCamp professional certification. The case study involved cleaning, visually exploring, and comparing logistic regression, random forest, and extreme gradient boosting modeling techniques to predict matches. After submitting and passing the technical portion, I completed the certification process by passing a live, non-technical presentation of the case study findings, which also involved making business recommendations.  
 
-Please reference the jupyter notebook or .html file to see the technical report, and the .pptx file to view the non-technical presentation.
+Please reference the jupyter notebook or .html file to view the technical report.
 <a href="https://docs.google.com/presentation/d/e/2PACX-1vRzjzQ68HULgMqCs-9gtvhsZk_uRxibMJFzd9sdxHoiMLxZfGrHz3ZpBDE2Pf7y0oTIqVJmrIXqBHls/pub?start=false&loop=false&delayms=15000">Click Here</a> to view the non-technical slide presentation.
