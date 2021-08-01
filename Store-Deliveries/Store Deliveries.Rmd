@@ -1,7 +1,7 @@
 ---
 title: "Store Deliveries"
-author: "Anil Kumar"
-date: "7/31/2021"
+author: "Author: Anil Kumar"
+
 output:
   html_document: default
   pdf_document: default
@@ -14,11 +14,11 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 1) Introduction
+### 1) Introduction
 
 The business problem is that at the beginning of the COVID lockdown a local company that faciliates ordering and home delivery of products has become inundated with orders.  As a result of this increased demand, many orders are being voided by participating stores and there are also many deliveries that take longer than the 1 hour goal.  The data is from a one week period at the start of the COVID lockdown.  The company is trying to gain more insight about the factors that contribute to orders getting voided and taking longer to deliver.  The company utilizes three different stores that supply and delivery the products.    
 
-## 2) Pre-processing and Cleaning
+### 2) Pre-processing and Cleaning
 
 ```{r read in the necessary libraries, message=FALSE}
 # Include the necessary libraries 
@@ -121,6 +121,7 @@ From the above summaries, it is apparent that the missing values are for deliver
 
 **DATA DICTIONARY:**
 
+
 * **Store:** Represents the store; Each store is open daily from 12pm-9pm
 * **Order_Status:** _Delivered_ = Order was delivered successfully; _Void_ = Order was voided (cancelled) by retailer; The data does not include orders that were voided by the consumer as the number was negligible
 * **Delivery_Time:** The number of minutes between when the order was placed and when the order was delivered
@@ -132,12 +133,12 @@ From the above summaries, it is apparent that the missing values are for deliver
 * **Time_of_Day:** Whether order was placed before 5pm or after 5pm
 * **Delivery_Over_1hr:** Whether order was delivered in over 1hour vs. 1hr or less
 
-## 3) Exploratory Data Analysis 
+### 3) Exploratory Data Analysis 
 
 Below, features are visually explored to assess their associations with orders being voided and longer delivery times.  I have also created an interactive dashboard using Tableau to assess these relationships.  Feel free to use and play around with the dashboard here:
 https://public.tableau.com/app/profile/anil.kumar8305/viz/OrderDeliveryTimesandVoids/VoidorLate
 
-### 3a) Exploring Order Status
+#### 3a) Exploring Order Status
 
 First, voided orders are explored in order to examine any trends in the data.  Of all of the 2320 orders, 318 were voided by a retailer (13.7%)
 ```{r Order Status counts}
@@ -253,7 +254,7 @@ data %>% group_by(Weekend, Time_of_Day, Order_Status) %>%
                theme_bw()
 ```
 
-### 3b) Exploring Delivery Time
+#### 3b) Exploring Delivery Time
 
 Of all of the 2002 orders that were delivered, 1,037 (51.8%) took over 1 hour to deliver.  The median delivery time is 63 minutes and the mean is 77.05 minutes.  
 ```{r Delivery_Over_1hr counts}
@@ -558,7 +559,7 @@ From the exploratory data analysis, it's clear that orders placed on weekends an
 One solution that will be discussed is trying to accurately predict delivery times so that even if deliveries are going to take longer than one hour, at least an approximate time can be given to the customer.  This solution is discussed in the section below.    
 
 
-## 4) Predicting Delivery Times
+### 4) Predicting Delivery Times
 
 First, training and validation data sets are created.  The training set consists of 70% of the data and the validation set consists of 30% of the data.  A partition is created so that both the training and validation sets have an equal proportion of observations where the delivery time was over 1hr.
 
