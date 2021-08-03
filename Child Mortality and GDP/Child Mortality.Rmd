@@ -1,0 +1,135 @@
+---
+title: "Child Mortality and GDP--Merging and Cleaning Prior to Visualization"
+author: "Author: Anil Kumar"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1) Introduction
+
+For this project, I needed to clean and merge two datasets that I obtained from the gapminder website: 
+https://www.gapminder.org/data/
+
+**Goal:** Clean and merge the two datasets such that each observation (row) represents: 
+
+* Country
+* Year
+* GDP per capita of the country for the year
+* Child mortality rate of the country for the year
+
+The final cleaned dataset will be written to a .csv file and visualization will be completed in Tableau.  
+
+### 2) Merging and Cleaning
+
+```{r read in the necessary libraries, message=FALSE}
+# Include the necessary libraries 
+# (not all may be used...but I usually include the most common ones I use by habit)
+library(tidyverse)
+library(readr)
+library(readxl)
+library(jtools)
+library(plotly)
+library(caret)
+library(pROC)
+library(MLmetrics)
+library(janitor)
+library(lubridate)
+```
+
+
+Both .csv files are read in and named appropriately with "raw" as the suffix.   
+```{r read in csv files, message=FALSE}
+#read in the data and clean the column names
+df_mortality_raw <- read_csv("child_mortality_0_5_year_olds_dying_per_1000_born.csv")
+df_gdp_raw <- read_csv("gdppercapita_us_inflation_adjusted.csv")
+```
+
+```{r}
+head(df_mortality_raw)
+```
+
+```{r}
+head(df_gdp_raw)
+```
+
+It's clear that neither of the datasets are in tidy format.  That is, the years should not be columns.
+
+First, the dataframe containing gdp per capita values is converted to tidy format and saved into a new dataframe.  The raw data is deleted.  
+```{r}
+df_gdp <- df_gdp_raw %>% pivot_longer(., cols=2:61, names_to="Year", 
+                                      values_to="GDP")
+rm(df_gdp_raw)
+```
+
+
+Next, the same is done for the dataframe containing child mortality rates.  
+```{r}
+df_mortality <- df_mortality_raw %>% pivot_longer(., cols=2:302, names_to="Year", 
+                                                  values_to="Mortality")
+
+rm(df_mortality_raw)
+```
+
+
+Check to see that both dataframes are now in tidy format.
+```{r}
+head(df_mortality)
+head(df_gdp)
+```
+
+
+Next:
+
+1. The dataframes are merged with an inner join by **country** and **year**.
+2. Rows with missing values are dropped
+3. **country** column is renamed to **Country**
+4. **Year** column is converted to numeric value (previously character)
+5. When examning the GDP column, some values are written with a "k" suffix.  For example, **12k** is written instead of **12,000**.  
+  + For any cells where this is the case, the "k" is stripped and the value of the cell is multiplied by 1,000 to reflect the actual numeric value
+  + All values in the **GDP** column are also converted to numeric (previously character)
+6. Data is filtered for years 2001 and later
+```{r, message=FALSE, warning=FALSE}
+df_gdp_mortality <-df_gdp %>% 
+                    inner_join(df_mortality, by=c("country"="country", "Year"="Year")) %>% 
+                    drop_na() %>%
+                    rename(Country=country) %>%
+                    mutate(Year=as.integer(Year)) %>%
+                    mutate(GDP = ifelse(
+                                substring(GDP,nchar(GDP),nchar(GDP))=="k",
+                                as.numeric(substring(GDP,nchar(1),nchar(GDP)-1)) * 1000, 
+                                as.numeric(GDP))) %>%
+                    filter(Year>=2001)
+```
+
+Confirm no missing values and check to see that the final dataframe is in the correct format.  
+```{r}
+sum(is.na(df_gdp_mortality))
+head(df_gdp_mortality)
+```
+
+Merged and cleaned dataframe is written to a .csv file.  
+Data will be visualized in Tableau!
+```{r}
+write.csv(df_gdp_mortality,"gdp_and_childmortality_2001_2018.csv", row.names = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
