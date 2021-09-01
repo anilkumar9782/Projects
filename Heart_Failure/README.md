@@ -1,1 +1,1 @@
-The purpose of this project is to compare classification models and survival analysis to predict death due to cardiovascular disease (CVD) for patients with risk factors such as hypertension, diabetes, high cholesterol, tobacco use, and other serum markers in the blood.
+The purpose of this project is to compare classification models and survival analysis in predicting death due to cardiovascular disease (CVD) for patients with risk factors such as hypertension, diabetes, high cholesterol, tobacco use, and other serum markers in the blood.
