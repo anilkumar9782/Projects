@@ -63,7 +63,7 @@ summary(data)
 sum(is.na(data))
 ```
 
-There are no missing values in the dataset and from the above summary it does not appear that there are any invalid entries.  This makes life much easier as no major cleaning is necessary.  The **children** column needs to be further explored as the range is 0-5.  Depending on the counts for the varying number of children/dependants, the categories may have to be collapsed if some are overly underrepresented.
+There are no missing values in the dataset and from the above summary it does not appear that there are any invalid entries.  This makes life much easier as no major cleaning is necessary.  The **children** column needs to be further explored as the range is 0-5.  Depending on the counts for the varying number of children/dependents, the levels of categories may have to be collapsed if some are overly underrepresented.
 
 ```{r}
 summary(factor(data$children))
@@ -83,24 +83,27 @@ For reference, a summary of the data dictionary is below.
 **FEATURES:**
 
 * **age**: age of primary beneficiary
-* **sex**: female or male
-* **bmi**: body mass index
-* **num_children**: number of children covered by health insurance / number of dependents
-* **smoker**: non-smoker vs. smoker
-* **region**: beneficiary's residential area in the US-northeast, southeast, southwest, northwest.
+* **sex**: sex of primary beneficiary
+* **bmi**: body mass index of primary beneficiary
+* **num_children**: number of children/dependents covered by health insurance
+* **smoker**: smoking status of primary beneficiary
+* **region**: beneficiary's residential area in the US 
 
 **TARGET:**
 
-* **charges**: Medical costs of insured
+* **charges**: total medical costs of primary beneficiary and dependents 
 
 ### 3) Exploratory Data Analysis 
 
-First, **charges** (target) is explored.  After, each feature is explored with respect to its relationship to **charges**.  
+First, **charges** (the target variable) is explored.  Afterward, each predictor is explored with respect to its relationship to **charges**.  
 ```{r Summary stats of charges, message=FALSE}
 data$charges %>% summary()
 
-ggplot(data, aes(charges)) + geom_boxplot() + scale_x_continuous(labels=scales::dollar_format())
-ggplot(data, aes(charges)) + geom_density(size=1) + scale_x_continuous(labels=scales::dollar_format())
+ggplot(data, aes(charges)) + geom_boxplot() + scale_x_continuous(labels=scales::dollar_format()) +   
+       ggtitle("Distribution of Charges") 
+
+  ggplot(data, aes(charges)) + geom_density(size=1) + scale_x_continuous(labels=scales::dollar_format()) +   
+       ggtitle("Distribution of Charges") 
 ```
 
 ```{r Sex, message=FALSE}
@@ -113,14 +116,14 @@ data %>%  group_by(sex) %>%
 data %>%  drop_na() %>%
           ggplot(.,aes(x=sex, y=charges, fill=sex)) + 
           geom_boxplot() +
-          ggtitle("Distributions of Charges by Sex") +
+          ggtitle("Distribution of Charges by Sex") +
           scale_y_continuous(labels=scales::dollar_format()) +
           theme_bw() +
           theme(legend.position="none")  
 
 data %>% drop_na() %>%
           ggplot(.,aes(x=charges, color=sex)) + geom_density(size=1) + 
-          ggtitle("Distributions of Charges by Sex") +
+          ggtitle("Distribution of Charges by Sex") +
           scale_x_continuous(labels=scales::dollar_format()) +
           theme_bw() 
 ```
@@ -135,14 +138,14 @@ data %>%  group_by(smoker) %>%
 data %>%  drop_na() %>%
           ggplot(.,aes(x=smoker, y=charges, fill=smoker)) + 
           geom_boxplot() +
-          ggtitle("Distributions of Charges by Smoker") +
+          ggtitle("Distribution of Charges by Smoking Status") +
           theme_bw() +
           scale_y_continuous(labels=scales::dollar_format()) +
           theme(legend.position="none")  
 
 data %>% drop_na() %>%
           ggplot(.,aes(x=charges, color=smoker)) + geom_density(size=1) +
-          ggtitle("Distributions of Charges by Smoking Status") +
+          ggtitle("Distribution of Charges by Smoking Status") +
           scale_x_continuous(labels=scales::dollar_format()) +
           theme_bw() 
 ```
@@ -151,20 +154,20 @@ data %>% drop_na() %>%
 data %>% drop_na() %>%
         ggplot(., aes(x=age)) + 
                geom_density() +
-               ggtitle("Distribution of Ages") +
+               ggtitle("Distribution of Age") +
                theme_bw()
 
 data %>% drop_na() %>%
         ggplot(., aes(x=age,y=charges)) + 
                geom_jitter(alpha=0.7) +
-               ggtitle("Scatterplot of of Charges vs. Age") +
+               ggtitle("Scatterplot of Charges vs. Age") +
                scale_y_continuous(labels=scales::dollar_format()) +
                theme_bw()
 
 data %>% drop_na() %>%
         ggplot(., aes(x=age,y=charges, color=smoker)) + 
                geom_jitter(alpha=0.7) +
-               ggtitle("Scatterplot of of Charges vs. Age (by Smoking Status)") +
+               ggtitle("Scatterplot of Charges vs. Age (by Smoking Status)") +
                scale_y_continuous(labels=scales::dollar_format()) +
                theme_bw()
 ```
@@ -179,14 +182,14 @@ data %>% drop_na() %>%
 data %>% drop_na() %>%
         ggplot(., aes(x=bmi,y=charges)) + 
                geom_jitter(alpha=0.7) +
-               ggtitle("Scatterplot of of Charges vs. BMI") +
+               ggtitle("Scatterplot of Charges vs. BMI") +
                scale_y_continuous(labels=scales::dollar_format()) +
                theme_bw()
 
 data %>% drop_na() %>%
         ggplot(., aes(x=bmi,y=charges, color=smoker)) + 
                geom_jitter(alpha=0.7) +
-               ggtitle("Scatterplot of of Charges vs. BMI (by Smoking Status)") +
+               ggtitle("Scatterplot of Charges vs. BMI (by Smoking Status)") +
                scale_y_continuous(labels=scales::dollar_format()) +
                theme_bw()
 
@@ -203,14 +206,14 @@ data %>%  group_by(num_children) %>%
 data %>%  drop_na() %>%
           ggplot(.,aes(x=num_children, y=charges, fill=num_children)) + 
           geom_boxplot() +
-          ggtitle("Distributions of Charges by Number of Children") +
+          ggtitle("Distribution of Charges by Number of Children") +
           scale_y_continuous(labels=scales::dollar_format()) +
           theme_bw() +
           theme(legend.position="none")  
 
 data %>% drop_na() %>%
           ggplot(.,aes(x=charges, color=num_children)) + geom_density(size=1) + 
-          ggtitle("Distributions of Charges by Number of Children") +
+          ggtitle("Distribution of Charges by Number of Children") +
           scale_x_continuous(labels=scales::dollar_format()) +
           theme_bw() 
 
@@ -227,14 +230,14 @@ data %>%  group_by(region) %>%
 data %>%  drop_na() %>%
           ggplot(.,aes(x=region, y=charges, fill=region)) + 
           geom_boxplot() +
-          ggtitle("Distributions of Charges by Region") +
+          ggtitle("Distribution of Charges by Region") +
           scale_y_continuous(labels=scales::dollar_format()) +
           theme_bw() +
           theme(legend.position="none")  
 
 data %>% drop_na() %>%
           ggplot(.,aes(x=charges, color=region)) + geom_density(size=1) + 
-          ggtitle("Distributions of Charges by Region") +
+          ggtitle("Distribution of Charges by Region") +
           scale_x_continuous(labels=scales::dollar_format()) +
           theme_bw() 
 ```
@@ -242,16 +245,16 @@ data %>% drop_na() %>%
 Some obvious trends from the above visualizations:  
 
 * **Smoking** status plays a major role in costs
-* There is a visually apparent interaction between **smoking** and **bmi**; that is, **charges** increases as **bmi** increases, but at higher rate for a **smoker**
+* There is a visually apparent interaction between **smoking** and **bmi**; that is, **charges** increases as **bmi** increases, but at higher rate for **smokers** compared to **non-smokers**
 
-### 4) Predicting Charges
+### 4) Modeling and Predicting Charges
 
-In order to budget properly, an insurance company needs to be able to accurately predict costs.  Let's see if this can be accomplished.  Before any modeling is completed, the correlation coefficient of the continuous predictors (bmi and age) is checked.  This is a low value of 0.11, so both predictors can be included in a model without concern of multicollinearity.  
+In order to budget properly, an insurance company needs to be able to accurately predict costs.  Let's see how accurately this can be accomplished.  Before any modeling is completed, the correlation coefficient of the continuous predictors (**bmi** and **age**) is checked.  With a low value of 0.11, both predictors can be included in the model without concern of multicollinearity.  
 ```{r}
 data %>% select(bmi, age) %>% cor()
 ```
 
-Let's start with some diagnostic linear regression models.  One that uses all of the predictors, and one that uses all of the predictors plus an interaction term between **bmi/smoker**.   
+Let's start with some diagnostic linear regression models.  The first model uses all of the predictors, and the second one uses all of the predictors plus an interaction term between **bmi/smoker**.   
 ```{r}
 model <- lm(charges ~ ., data=data)
 summ(model, digits=3, confint = TRUE)
@@ -262,7 +265,7 @@ summ(model, digits=3, confint = TRUE)
 
 The model with the interaction term has a better fit with an Adjusted R^2^ of 0.84 compared to 0.75 for the simpler model.  
 
-Now, to see if predictions can be accurately made.  First, training and validation datasets are created.  The training set consists of 70% of the data and the validation set consists of 30% of the data.  A partition is created so that both the training and validation sets have an equal proportion of observations where charges are above or below the median charge.
+Now, to see if predictions can be accurately made.  First, training and validation datasets are created.  The training set consists of 70% of the data and the validation set consists of 30% of the data.  A partition is created so that both the training and validation sets have an equal proportion of observations where charges are above or below the median charge from the original dataset.  
 
 ```{r split into training and validation sets, message=FALSE}
 set.seed(2)
@@ -293,28 +296,25 @@ ggplot(data_train) + geom_density(data=data_train, aes(x=charges, col='blue')) +
                      theme_bw() +
                      scale_color_manual(labels = c("Training", "Validation"), values = c("blue", "red")) +
                      guides(color=guide_legend("Dataset")) +
-                     ggtitle("Distributions of Charges for Training and Validation datasets") +
+                     ggtitle("Distribution of Charges for Training and Validation datasets") +
                      scale_x_continuous(labels=scales::dollar_format())
 ```
 
 Based on the similar overlying density plots and similar mean/median charges for both of the datasets, an appropriate split was completed. 
 
-Now, the linear regression model with the interaction term is utilized using the training set and 5-fold cross validation is implemented for assessing the effectiveness of the model and its ability of to predict new data prior to using the validation set.  
+Now, the linear regression model with the interaction term is utilized using the training set and 5-fold cross validation is implemented to assess the effectiveness of the model and its ability of to predict new data prior to using it with the validation set.  
 
 ```{r}
 set.seed(1234)
 
-train_control <- trainControl(method = "cv",
-                              number = 5, p=0.70)
+train_control <- trainControl(method = "cv", number = 5, p=0.70)
 
-model <- train(charges ~ . + bmi:smoker, data = data_train,
-               method = "lm",
-               trControl = train_control)
+model <- train(charges ~ . + bmi:smoker, data = data_train, method = "lm", trControl = train_control)
  
 print(model)
 ```
 
-The model is then utilized to predict charges for both the training and validation datasets.  The **mean absolute error (MAE)** and **Root Mean Squared Error (RMSE)** for predicted charges is calculated for both datasets.
+The model is then utilized to predict charges for both the training and validation sets.  The **mean absolute error (MAE)** and **Root Mean Squared Error (RMSE)** for predicted charges is calculated for both datasets.
 
 ```{r}
 preds = predict(model, newdata=data_train)
@@ -359,7 +359,7 @@ df_pred %>% ggplot(., aes(x=Predicted_Charges, y=Actual_Charges,
                                     ylim=c(0, max(df_pred$Actual_Charges))) +
                         theme_bw() + 
                         labs(x="Predicted Charges", y="Actual Charges") +
-                        ggtitle("Actual Charges vs. Predicted Charges") +
+                        ggtitle("Actual Charges vs. Predicted Charges by Smoking Status") +
                         facet_grid(cols=vars(smoker)) +
                         theme(legend.position="none")  
 
@@ -373,7 +373,7 @@ df_pred %>%  group_by(Actual_Charges_Under_Prediction) %>%
                            percent=round(n()/nrow(.),2))
 ```
 
-For the 400 observations in the validation set, for 323 (81%) observations the actual charges were less than the predicted charges.  With respect to budgeting purposes you would rather pay under a patient's planned budget than over.  However, in the end, looking the percentage of individual patient budgets that were exceeded or not does not give a summary of the big picture.  An insurance company would need to know the cumulative totals from all patients to see if the overall budget was planned appropriately.  Calculations for this scenario in the training and validation sets are below. 
+Out of the 400 observations in the validation set, for 323 (81%) observations the actual charges were less than the predicted charges.  With respect to budgeting, it's definitely better for the company to end up paying less than a patient's planned budget than over it.  However, in the end, looking at the percentage of individual patient budgets that were exceeded or not does not give a summary of the big picture.  An insurance company would need to know the cumulative total charges from of all patients to see if the overall budget was planned appropriately.  Calculations for this scenario in both the training and validation sets are below. 
 
 ```{r predict charges using training and validation sets, message FALSE}
 preds = predict(model, newdata=data_train)
@@ -409,4 +409,6 @@ For the 400 observations in the validation set, the total predicted charges was 
 
 ## 5) Conclusions
 
-The model was able to predict the budget in the validation set with a 0.18% absolute error, and seems that it could be a useful tool to use for budgeting purposes.  More data is needed to validate the model's accuracy and predictive power.    
+The model was able to predict the budget in the validation set with a 0.18% absolute error, which indicates that it could be a useful tool to use for budget planning purposes.  More data is needed to validate the model's accuracy and predictive power. 
+
+Thanks for reading and feel free to <a href='mailto:anilkumar9782@gmail.com'>email</a> me with questions or comments.  
