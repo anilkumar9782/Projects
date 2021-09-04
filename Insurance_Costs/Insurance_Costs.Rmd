@@ -63,7 +63,7 @@ summary(data)
 sum(is.na(data))
 ```
 
-There are no missing values in the dataset and from the above summary it does not appear that there are any invalid entries.  This makes life much easier as no major cleaning is necessary.  The **children** column needs to be further explored as the range is 0-5.  Depending on the counts for the varying number of children/dependents, the levels of categories may have to be collapsed if some are overly underrepresented.
+There are no missing values in the dataset and from the above summary it does not appear that there are any invalid entries.  This makes life much easier as no major cleaning is necessary.  The **children** column needs to be further explored as the range is 0-5.  Depending on the counts for the possible numbers of children/dependents, the category levels may have to be collapsed if some are overly underrepresented.
 
 ```{r}
 summary(factor(data$children))
@@ -206,14 +206,14 @@ data %>%  group_by(num_children) %>%
 data %>%  drop_na() %>%
           ggplot(.,aes(x=num_children, y=charges, fill=num_children)) + 
           geom_boxplot() +
-          ggtitle("Distribution of Charges by Number of Children") +
+          ggtitle("Distribution of Charges by Number of Children/Dependents") +
           scale_y_continuous(labels=scales::dollar_format()) +
           theme_bw() +
           theme(legend.position="none")  
 
 data %>% drop_na() %>%
           ggplot(.,aes(x=charges, color=num_children)) + geom_density(size=1) + 
-          ggtitle("Distribution of Charges by Number of Children") +
+          ggtitle("Distribution of Charges by Number of Children/Dependents") +
           scale_x_continuous(labels=scales::dollar_format()) +
           theme_bw() 
 
@@ -249,7 +249,7 @@ Some obvious trends from the above visualizations:
 
 ### 4) Modeling and Predicting Charges
 
-In order to budget properly, an insurance company needs to be able to accurately predict costs.  Let's see how accurately this can be accomplished.  Before any modeling is completed, the correlation coefficient of the continuous predictors (**bmi** and **age**) is checked.  With a low value of 0.11, both predictors can be included in the model without concern of multicollinearity.  
+In order to budget properly, an insurance company needs to be able to accurately predict costs.  Let's see how accurately this can be accomplished for this dataset.  Before any modeling is completed, the correlation coefficient of the continuous predictors (**bmi** and **age**) is checked.  With a low value of 0.11, both predictors can be included in the model without concern of multicollinearity.  
 ```{r}
 data %>% select(bmi, age) %>% cor()
 ```
@@ -373,7 +373,7 @@ df_pred %>%  group_by(Actual_Charges_Under_Prediction) %>%
                            percent=round(n()/nrow(.),2))
 ```
 
-Out of the 400 observations in the validation set, for 323 (81%) observations the actual charges were less than the predicted charges.  With respect to budgeting, it's definitely better for the company to end up paying less than a patient's planned budget than over it.  However, in the end, looking at the percentage of individual patient budgets that were exceeded or not does not give a summary of the big picture.  An insurance company would need to know the cumulative total charges from of all patients to see if the overall budget was planned appropriately.  Calculations for this scenario in both the training and validation sets are below. 
+Out of the 400 observations in the validation set, for 323 (81%) observations the actual charges were less than the predicted charges.  With respect to budgeting, it's definitely better for the company to end up paying less than a patient's planned budget than over it.  However, in the end, looking at the percentage of individual patient budgets that were exceeded or not does not give a summary of the big picture.  An insurance company would need to know the cumulative total charges from all of the patients to see if the overall budget was planned appropriately.  Calculations for this scenario in both the training and validation sets are below. 
 
 ```{r predict charges using training and validation sets, message FALSE}
 preds = predict(model, newdata=data_train)
