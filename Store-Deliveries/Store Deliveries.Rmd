@@ -510,7 +510,7 @@ data %>% drop_na() %>%
         ggplot(., aes(x=GMV,y=Delivery_Time, shape=Time_of_Day, color=Weekend)) + 
                geom_jitter(alpha=0.7) +
                geom_hline(aes(yintercept=60), color='black', linetype='dashed') + 
-               ggtitle("Scatterplot of of Delivery Times vs. GMV", 
+               ggtitle("Scatterplot of Delivery Times vs. GMV", 
                   subtitle="Dashed Black Reference Line = 60 minutes") +
                theme_bw()
 ```
@@ -590,7 +590,7 @@ ggplot(data_train) + geom_density(data=data_train, aes(x=Delivery_Time, col='blu
                      theme_bw() +
                      scale_color_manual(labels = c("Training", "Validation"), values = c("blue", "red")) +
                      guides(color=guide_legend("Dataset")) +
-                     ggtitle("Distributions of of Delivery Times for Training and Validation datasets") 
+                     ggtitle("Distributions of Delivery Times for Training and Validation datasets") 
 ```
 
 Now, a linear regression model is created to predict **Delivery_Time** using **Store, Day, Hour, GMV**, and **Substitution**.  The model also includes a 3-way interaction term between **Day/Hour/Store**.  This interaction term was included based on the EDA.
